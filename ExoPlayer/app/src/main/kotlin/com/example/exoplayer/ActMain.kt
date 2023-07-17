@@ -22,5 +22,15 @@ class ActMain : AppCompatActivity() {
 
     private fun initView() {}
 
-    private fun setClickListener() {}
+    private fun setClickListener() {
+
+        mBinding.btnVideo.setOnClickListener {
+
+            Intent(this@ActMain, ActVideo::class.java).apply {
+
+                flags = Intent.FLAG_ACTIVITY_CLEAR_TOP
+                startActivity(this)
+            }
+        }
+    }
 }
