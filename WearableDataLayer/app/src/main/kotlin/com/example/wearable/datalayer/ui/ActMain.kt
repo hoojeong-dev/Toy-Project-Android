@@ -12,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.lifecycle.lifecycleScope
+import com.example.wearable.common.CommonConstants
 import com.example.wearable.datalayer.ui.theme.WearableDataLayerTheme
 import com.example.wearable.datalayer.ui.viewmodel.MainViewModel
 import com.google.android.gms.common.GoogleApiAvailability
@@ -28,12 +29,6 @@ import kotlinx.coroutines.tasks.await
  * Main Activity
  */
 class ActMain : ComponentActivity() {
-
-    companion object {
-
-        private const val WEAR_CAPABILITY = "wear"
-        private const val PATH_START_WATCH_APP = "/start_watch_app"
-    }
 
     /** Wearable Client */
     private val dataClient by lazy { Wearable.getDataClient(this) }              // Wear OS 기기와 데이터 동기화
@@ -89,7 +84,7 @@ class ActMain : ComponentActivity() {
 
         dataClient.addListener(mainViewModel)
         messageClient.addListener(mainViewModel)
-        capabilityClient.addListener(mainViewModel, Uri.parse("$WEAR_CAPABILITY://"), CapabilityClient.FILTER_REACHABLE)
+        capabilityClient.addListener(mainViewModel, Uri.parse("${CommonConstants.WEAR_CAPABILITY}://"), CapabilityClient.FILTER_REACHABLE)
     }
 
     /**
@@ -113,11 +108,11 @@ class ActMain : ComponentActivity() {
 
                 // wearable 디바이스 정보 가져오기
                 capabilityClient
-                    .getCapability(WEAR_CAPABILITY, CapabilityClient.FILTER_REACHABLE)
+                    .getCapability(CommonConstants.WEAR_CAPABILITY, CapabilityClient.FILTER_REACHABLE)
                     .await()
                     .nodes
                     .map { node ->
-                        async { messageClient.sendMessage(node.id, PATH_START_WATCH_APP, byteArrayOf()).await() }
+                        async { messageClient.sendMessage(node.id, CommonConstants.PATH_START_WATCH_APP, byteArrayOf()).await() }
                     }.awaitAll()
 
             } catch (e: Exception) {

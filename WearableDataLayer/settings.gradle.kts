@@ -22,3 +22,4 @@ dependencyResolutionManagement {
 rootProject.name = "Wearable-DataLayer"
 include(":app")
 include(":wearable")
+include(":common")
