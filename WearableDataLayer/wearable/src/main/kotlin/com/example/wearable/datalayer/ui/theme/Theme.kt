@@ -1,4 +1,4 @@
-package com.example.wearable.datalayer.theme
+package com.example.wearable.datalayer.ui.theme
 
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.material.MaterialTheme

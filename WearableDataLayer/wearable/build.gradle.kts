@@ -37,6 +37,9 @@ android {
 
 dependencies {
 
+    /** Multi Module */
+    implementation(project(":common"))
+
     implementation(libs.play.services.wearable)
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.ui)
