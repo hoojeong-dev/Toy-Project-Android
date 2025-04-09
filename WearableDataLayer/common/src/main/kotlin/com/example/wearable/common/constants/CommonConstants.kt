@@ -18,5 +18,11 @@ class CommonConstants {
          */
         const val KEY_IMAGE = "KEY_IMAGE"
         const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
+        const val KEY_BROADCAST = "KEY_BROADCAST"
+
+        /**
+         * Broadcast
+         */
+        const val ACTION_SEND_DATA = "com.example.wearable.ACTION_MESSAGE_RECEIVED"
     }
 }

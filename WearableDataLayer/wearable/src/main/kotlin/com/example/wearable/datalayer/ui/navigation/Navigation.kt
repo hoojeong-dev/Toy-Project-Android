@@ -1,6 +1,7 @@
 package com.example.wearable.datalayer.ui.navigation
 
 import android.graphics.Bitmap
+import androidx.compose.runtime.State
 import androidx.compose.runtime.Composable
 import androidx.wear.compose.navigation.SwipeDismissableNavHost
 import androidx.wear.compose.navigation.composable
@@ -13,7 +14,7 @@ import com.google.android.horologist.compose.layout.AppScaffold
 
 @Composable
 fun Navigation(
-    image: Bitmap?
+    image: State<Bitmap?>
 ) {
 
     AppScaffold {
@@ -27,7 +28,7 @@ fun Navigation(
             // main 화면
             composable(route = Destination.DESTINATION_MAIN) {
                 MainApp(
-                    image = image
+                    image = image.value
                 )
             }
         }

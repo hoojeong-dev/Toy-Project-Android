@@ -1,10 +1,9 @@
 package com.example.wearable.datalayer.ui.viewmodel
 
 import android.graphics.Bitmap
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import com.example.wearable.common.data.Event
 import com.google.android.gms.wearable.CapabilityClient
@@ -28,7 +27,8 @@ class MainViewModel:
     val events: List<Event> = _events
 
     /** 전달 받은 이미지 */
-    var image by mutableStateOf<Bitmap?>(null)
+    private val _image = mutableStateOf<Bitmap?>(null)
+    val image: State<Bitmap?> get() = _image
 
     override fun onDataChanged(p0: DataEventBuffer) {
 
@@ -40,5 +40,14 @@ class MainViewModel:
 
     override fun onCapabilityChanged(p0: CapabilityInfo) {
 
+    }
+
+    /**
+     * 수신한 이미지 저장
+     *
+     * @param image
+     */
+    fun setImage(image: Bitmap?) {
+        _image.value = image
     }
 }
