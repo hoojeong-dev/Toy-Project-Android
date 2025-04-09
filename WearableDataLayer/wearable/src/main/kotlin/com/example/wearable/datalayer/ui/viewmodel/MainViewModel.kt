@@ -1,7 +1,12 @@
 package com.example.wearable.datalayer.ui.viewmodel
 
+import android.graphics.Bitmap
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateListOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
+import com.example.wearable.common.data.Event
 import com.google.android.gms.wearable.CapabilityClient
 import com.google.android.gms.wearable.CapabilityInfo
 import com.google.android.gms.wearable.DataClient
@@ -18,8 +23,12 @@ class MainViewModel:
     MessageClient.OnMessageReceivedListener,
     CapabilityClient.OnCapabilityChangedListener {
 
+    /** Event */
     private val _events = mutableStateListOf<Event>()
     val events: List<Event> = _events
+
+    /** 전달 받은 이미지 */
+    var image by mutableStateOf<Bitmap?>(null)
 
     override fun onDataChanged(p0: DataEventBuffer) {
 
@@ -33,8 +42,3 @@ class MainViewModel:
 
     }
 }
-
-data class Event(
-    val title: String,
-    val text: String
-)

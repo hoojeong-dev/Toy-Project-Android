@@ -1,25 +1,22 @@
 package com.example.wearable.datalayer.ui
 
+import android.graphics.Bitmap
+import android.os.Build
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
-import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.runtime.Composable
-import androidx.compose.ui.Alignment
-import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.style.TextAlign
-import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
-import androidx.wear.compose.material.MaterialTheme
-import androidx.wear.compose.material.Text
-import androidx.wear.compose.material.TimeText
-import com.example.wearable.common.CommonConstants
-import com.example.wearable.datalayer.ui.theme.WearableDataLayerTheme
+import androidx.activity.viewModels
+import androidx.lifecycle.lifecycleScope
+import com.example.wearable.common.constants.CommonConstants
+import com.example.wearable.datalayer.ui.navigation.Navigation
+import com.example.wearable.datalayer.ui.viewmodel.MainViewModel
+import com.example.wearable.datalayer.ui.viewmodel.NodeViewModel
 import com.google.android.gms.wearable.Wearable
+import kotlinx.coroutines.launch
 
+/**
+ * Main Activity
+ */
 class ActMain : ComponentActivity() {
 
     /** Wearable Client */
@@ -27,72 +24,49 @@ class ActMain : ComponentActivity() {
     private val messageClient by lazy { Wearable.getMessageClient(this) }        // Wear OS 기기와 단방향 통신
     private val capabilityClient by lazy { Wearable.getCapabilityClient(this) }  // Wear OS 기기의 특정 기능(예: 카메라 지원 여부) 확인
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+    /** ViewModel */
+    private val mainViewModel by viewModels<MainViewModel>()
 
+    override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setTheme(android.R.style.Theme_DeviceDefault)
-
-        setContent {
-            WearApp("Android")
-        }
+        initializeData()
+        initialize()
     }
 
     override fun onResume() {
         super.onResume()
-        addWearableClientListener()
-    }
 
-    override fun onPause() {
-        super.onPause()
-        removeWearableClientListener()
-    }
-
-    /**
-     * Wearable Client Listener 등록
-     */
-    private fun addWearableClientListener() {
-
-//        dataClient.addListener(mainViewModel)
-//        messageClient.addListener(mainViewModel)
-//        capabilityClient.addListener(mainViewModel, Uri.parse("${CommonConstants.WEAR_CAPABILITY}://"), CapabilityClient.FILTER_REACHABLE)
+        // Capability Client 등록
+        capabilityClient.removeLocalCapability(CommonConstants.WEAR_CAPABILITY)
         capabilityClient.addLocalCapability(CommonConstants.WEAR_CAPABILITY)
     }
 
     /**
-     * Wearable Client Listener 제거
+     * Main Activity Data 초기화
      */
-    private fun removeWearableClientListener() {
+    private fun initializeData() {
 
-//        dataClient.removeListener(mainViewModel)
-//        messageClient.removeListener(mainViewModel)
-//        capabilityClient.removeListener(mainViewModel)
-    }
-}
-
-
-@Composable
-fun WearApp(greetingName: String) {
-    WearableDataLayerTheme {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(MaterialTheme.colors.background),
-            contentAlignment = Alignment.Center
-        ) {
-            TimeText()
-            Greeting(greetingName = greetingName)
+        // 전달 받은 이미지 저장
+        mainViewModel.image = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            intent.getParcelableExtra(CommonConstants.KEY_IMAGE, Bitmap::class.java)
+        } else {
+            @Suppress("DEPRECATION")
+            intent.getParcelableExtra<Bitmap?>(CommonConstants.KEY_IMAGE)
         }
     }
-}
 
-@Composable
-fun Greeting(greetingName: String) {
-    Text(
-        modifier = Modifier.fillMaxWidth(),
-        textAlign = TextAlign.Center,
-        color = MaterialTheme.colors.primary,
-        text = stringResource(com.example.wearable.datalayer.R.string.hello_world, greetingName)
-    )
+    /**
+     * Main Activity 초기화
+     */
+    private fun initialize() {
+
+        setTheme(android.R.style.Theme_DeviceDefault)
+        setContent {
+
+            Navigation(
+                image = mainViewModel.image
+            )
+        }
+    }
 }
