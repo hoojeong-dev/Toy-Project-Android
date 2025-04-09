@@ -78,6 +78,29 @@ class DataLayerListenerService: WearableListenerService() {
 
         when(messageEvent.path) {
 
+            // message 수신
+            CommonConstants.PATH_SEND_MESSAGE -> {
+
+                if (isForeground()) {
+
+                    // 앱이 실행 중인 경우 - broadcast로 메세지 전송
+                    Intent(CommonConstants.ACTION_SEND_DATA).apply {
+                        putExtra(CommonConstants.KEY_BROADCAST, CommonConstants.PATH_SEND_MESSAGE)
+                        putExtra(CommonConstants.KEY_MESSAGE, messageEvent.data)
+                        putExtra(CommonConstants.KEY_TIMESTAMP, System.currentTimeMillis())
+                        sendBroadcast(this)
+                    }
+
+                } else {
+
+                    // 앱이 꺼져있는 경우 - intent로 앱 실행 및 메세지 전송
+                    mainIntent().apply {
+                        putExtra(CommonConstants.KEY_MESSAGE, messageEvent.data)
+                        startActivity(this)
+                    }
+                }
+            }
+
             // watch app 실행 (앱이 꺼져있는 경우)
             CommonConstants.PATH_START_WATCH_APP -> if (!isForeground()) startActivity(mainIntent())
         }

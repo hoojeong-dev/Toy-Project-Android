@@ -33,7 +33,8 @@ import com.google.android.horologist.compose.material.Chip
 @OptIn(ExperimentalHorologistApi::class)
 @Composable
 fun MainApp(
-    image: Bitmap?
+    image: Bitmap?,
+    messages: List<Event>
 ) {
 
     val columnState = rememberResponsiveColumnState(
@@ -66,6 +67,35 @@ fun MainApp(
                     }
                 }
             }
+
+            // 수신 message 목록
+            if (messages.isEmpty()) {
+                item {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = "Waiting for message to arrived",
+                        textAlign = TextAlign.Center
+                    )
+                }
+            } else {
+                items(messages) { event ->
+                    Card(
+                        enabled = false,
+                        onClick = {}
+                    ) {
+                        Column {
+                            Text(
+                                text = event.title,
+                                style = MaterialTheme.typography.title3
+                            )
+                            Text(
+                                text = event.text,
+                                style = MaterialTheme.typography.body2
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }
@@ -76,6 +106,7 @@ fun MainApp(
 fun MainAppPreview() {
 
     MainApp(
-        image = null
+        image = null,
+        messages = emptyList()
     )
 }

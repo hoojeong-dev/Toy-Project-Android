@@ -20,6 +20,9 @@ import com.example.wearable.datalayer.ui.viewmodel.MainViewModel
 import com.example.wearable.datalayer.ui.viewmodel.NodeViewModel
 import com.google.android.gms.wearable.Wearable
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.ZoneId
+import java.time.format.DateTimeFormatter
 
 /**
  * Main Activity
@@ -42,6 +45,9 @@ class ActMain : ComponentActivity() {
 
                 // 이미지 수신
                 CommonConstants.PATH_SEND_IMAGE -> setImageFromIntent(intent)
+
+                // 메세지 수신
+                CommonConstants.PATH_SEND_MESSAGE -> setMessageFromIntent(intent)
             }
         }
     }
@@ -89,8 +95,8 @@ class ActMain : ComponentActivity() {
         // 전달 받은 이미지 저장
         setImageFromIntent(intent)
 
-        // 연결된 노드 데이터 저장
-        lifecycleScope.launch { nodeViewModel.fetchNodes(capabilityClient) }
+        // 전달 받은 메세지 저장
+        setMessageFromIntent(intent)
     }
 
     /**
@@ -104,13 +110,14 @@ class ActMain : ComponentActivity() {
             val image by rememberUpdatedState(newValue = mainViewModel.image)
 
             Navigation(
-                image = image
+                image = image,
+                messages = mainViewModel.messages
             )
         }
     }
 
     /**
-     * Intent로 부터 전달받은 이미지 뷰 모델에 저장
+     * 전달받은 이미지 뷰 모델에 저장
      *
      * @param intent
      */
@@ -121,8 +128,32 @@ class ActMain : ComponentActivity() {
         } else {
             @Suppress("DEPRECATION")
             intent.getParcelableExtra<Bitmap?>(CommonConstants.KEY_IMAGE)
-        }
+        } ?: return
 
         mainViewModel.setImage(image)
+    }
+
+    /**
+     * 전달받은 메세지 뷰 모델에 저장
+     *
+     * @param intent
+     */
+    private fun setMessageFromIntent(intent: Intent) {
+
+        val message = intent.getByteArrayExtra(CommonConstants.KEY_MESSAGE)?.toString(Charsets.UTF_8) ?: return
+        val timestamp = intent.getLongExtra(CommonConstants.KEY_TIMESTAMP, 0L)
+
+        mainViewModel.setMessage(message, timestamp.toDate())
+    }
+
+    /**
+     * timestamp to Date
+     *
+     * @param
+     */
+    private fun Long.toDate(): String? {
+
+        val formatter = DateTimeFormatter.ofPattern("yyyy.MM.dd HH:mm:ss").withZone(ZoneId.systemDefault())
+        return formatter.format(Instant.ofEpochMilli(this))
     }
 }

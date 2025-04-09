@@ -44,8 +44,11 @@ fun MainApp(
     cameraSupported: Boolean,
     onTakePhotoClick: () -> Unit,
     onSendPhotoClick: () -> Unit,
+    onSendMessageClick: (String?) -> Unit,
     onStartWatchAppClick: () -> Unit
 ) {
+
+    var message by remember { mutableStateOf("") }
 
     LazyColumn(contentPadding = PaddingValues(20.dp)) {
 
@@ -59,6 +62,25 @@ fun MainApp(
                     textAlign = TextAlign.Center
                 )
             }
+        }
+
+        // Watch App에 입력한 텍스트 전송
+        item {
+            Row(verticalAlignment = Alignment.CenterVertically) {
+                TextField(
+                    modifier = Modifier.weight(0.6f),
+                    value = message,
+                    onValueChange = { message = it },
+                    label = { Text(text = "Send Message") },
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    modifier = Modifier.weight(0.2f),
+                    onClick = { onSendMessageClick(message) }) {
+                    Text(text = "Send")
+                }
+            }
+            CommonDivider()
         }
 
         // Watch App에 촬영한 사진 전송
@@ -150,6 +172,7 @@ fun MainAppPreview() {
         cameraSupported = true,
         onTakePhotoClick = {},
         onSendPhotoClick = {},
+        onSendMessageClick = {},
         onStartWatchAppClick = {}
     )
 }

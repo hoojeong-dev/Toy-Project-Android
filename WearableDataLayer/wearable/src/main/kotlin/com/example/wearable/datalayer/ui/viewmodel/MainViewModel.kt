@@ -6,41 +6,19 @@ import androidx.compose.runtime.mutableStateListOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import com.example.wearable.common.data.Event
-import com.google.android.gms.wearable.CapabilityClient
-import com.google.android.gms.wearable.CapabilityInfo
-import com.google.android.gms.wearable.DataClient
-import com.google.android.gms.wearable.DataEventBuffer
-import com.google.android.gms.wearable.MessageClient
-import com.google.android.gms.wearable.MessageEvent
 
 /**
  * Main ViewModel
  */
-class MainViewModel:
-    ViewModel(),
-    DataClient.OnDataChangedListener,
-    MessageClient.OnMessageReceivedListener,
-    CapabilityClient.OnCapabilityChangedListener {
-
-    /** Event */
-    private val _events = mutableStateListOf<Event>()
-    val events: List<Event> = _events
+class MainViewModel: ViewModel() {
 
     /** 전달 받은 이미지 */
     private val _image = mutableStateOf<Bitmap?>(null)
     val image: State<Bitmap?> get() = _image
 
-    override fun onDataChanged(p0: DataEventBuffer) {
-
-    }
-
-    override fun onMessageReceived(p0: MessageEvent) {
-
-    }
-
-    override fun onCapabilityChanged(p0: CapabilityInfo) {
-
-    }
+    /** 전달 받은 메세지 */
+    private val _messages = mutableStateListOf<Event>()
+    val messages: List<Event> = _messages
 
     /**
      * 수신한 이미지 저장
@@ -49,5 +27,20 @@ class MainViewModel:
      */
     fun setImage(image: Bitmap?) {
         _image.value = image
+    }
+
+    /**
+     * 수신한 메세지 저장
+     *
+     * @param message
+     * @param date
+     */
+    fun setMessage(message: String?, date: String?) {
+        _messages.add(0,
+            Event(
+                title = message ?: "",
+                text = date ?: ""
+            )
+        )
     }
 }

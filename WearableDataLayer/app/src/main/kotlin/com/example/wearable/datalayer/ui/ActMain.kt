@@ -93,6 +93,7 @@ class ActMain : ComponentActivity() {
                     cameraSupported = cameraSupported,
                     onTakePhotoClick = ::takePhoto,
                     onSendPhotoClick = ::sendPhoto,
+                    onSendMessageClick = ::sendMessage,
                     onStartWatchAppClick = ::startWatchApp
                 )
             }
@@ -151,6 +152,30 @@ class ActMain : ComponentActivity() {
 
             } catch (e: Exception) {
                 Log.d("!@", "Send photo failed: $e")
+            }
+        }
+    }
+
+    /**
+     * 입력한 메세지 전송
+     */
+    private fun sendMessage(message: String?) {
+
+        lifecycleScope.launch {
+
+            try {
+
+                // 특정 wearable 디바이스 찾아서 PATH_START_WATCH_APP로 빈 값 전송
+                capabilityClient
+                    .getCapability(CommonConstants.WEAR_CAPABILITY, CapabilityClient.FILTER_REACHABLE)
+                    .await()
+                    .nodes
+                    .map { node ->
+                        async { messageClient.sendMessage(node.id, CommonConstants.PATH_SEND_MESSAGE, message?.toByteArray()).await() }
+                    }.awaitAll()
+
+            } catch (e: Exception) {
+                Log.d("!@", "Send message failed: $e")
             }
         }
     }

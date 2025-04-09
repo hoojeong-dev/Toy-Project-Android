@@ -17,6 +17,7 @@ class CommonConstants {
          * Key
          */
         const val KEY_IMAGE = "KEY_IMAGE"
+        const val KEY_MESSAGE = "KEY_MESSAGE"
         const val KEY_TIMESTAMP = "KEY_TIMESTAMP"
         const val KEY_BROADCAST = "KEY_BROADCAST"
 
