@@ -139,32 +139,30 @@ fun MainApp(
         }
 
         // 연결된 node 목록
-        item {
+        if (nodes.isNotEmpty()) {
 
-            if (nodes.isNotEmpty()) {
-
+            items(nodes) { node ->
                 Column {
-                    nodes.forEach { node ->
-                        Column {
-                            Text(
-                                text = node.displayName,
-                                style = MaterialTheme.typography.titleSmall
-                            )
-                            Text(
-                                text = node.id,
-                                style = MaterialTheme.typography.bodySmall
-                            )
-                        }
-                    }
+                    Text(
+                        text = node.displayName,
+                        style = MaterialTheme.typography.titleSmall
+                    )
+                    Text(
+                        text = node.id,
+                        style = MaterialTheme.typography.bodySmall
+                    )
                 }
-            } else {
+                CommonDivider()
+            }
+        } else {
 
+            item {
                 Text(
                     text = "There are no connected nodes.",
                     style = MaterialTheme.typography.titleSmall
                 )
+                CommonDivider()
             }
-            CommonDivider()
         }
 
         // 수신 events 목록

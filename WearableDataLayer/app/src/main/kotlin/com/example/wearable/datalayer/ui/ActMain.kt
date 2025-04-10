@@ -8,16 +8,18 @@ import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
-import androidx.activity.viewModels
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.lifecycleScope
 import com.example.wearable.common.constants.CommonConstants
 import com.example.wearable.datalayer.ui.theme.WearableDataLayerTheme
 import com.example.wearable.datalayer.ui.viewmodel.MainViewModel
+import com.example.wearable.datalayer.ui.viewmodel.MainViewModelFactory
 import com.google.android.gms.common.GoogleApiAvailability
 import com.google.android.gms.common.api.AvailabilityException
 import com.google.android.gms.common.api.GoogleApi
@@ -44,7 +46,9 @@ class ActMain : ComponentActivity() {
     private val capabilityClient by lazy { Wearable.getCapabilityClient(this) }  // Wear OS 기기의 특정 기능(예: 카메라 지원 여부) 확인
 
     /** ViewModel */
-    private val mainViewModel by viewModels<MainViewModel>()
+    private val mainViewModel by lazy {
+        ViewModelProvider(this, MainViewModelFactory(capabilityClient))[MainViewModel::class.java]
+    }
 
     /** Camera 지원 여부 */
     private val cameraSupported by lazy {
@@ -76,9 +80,6 @@ class ActMain : ComponentActivity() {
      */
     private fun initialize() {
 
-        // 연결된 노드 데이터 저장
-        lifecycleScope.launch { mainViewModel.fetchNodes(capabilityClient) }
-
         setContent {
 
             WearableDataLayerTheme {
@@ -88,10 +89,12 @@ class ActMain : ComponentActivity() {
                     apiAvailable = isAvailableAPI(capabilityClient)
                 }
 
+                val nodes by mainViewModel.nodes.collectAsState()
+
                 MainApp(
                     events = mainViewModel.events,
                     image = mainViewModel.image,
-                    nodes = mainViewModel.nodes,
+                    nodes = nodes,
                     apiAvailable = apiAvailable,
                     cameraSupported = cameraSupported,
                     onTakePhotoClick = ::takePhoto,

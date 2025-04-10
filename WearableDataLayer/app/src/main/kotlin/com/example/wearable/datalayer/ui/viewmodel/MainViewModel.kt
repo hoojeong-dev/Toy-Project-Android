@@ -18,13 +18,17 @@ import com.google.android.gms.wearable.DataEventBuffer
 import com.google.android.gms.wearable.MessageClient
 import com.google.android.gms.wearable.MessageEvent
 import com.google.android.gms.wearable.Node
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.tasks.await
 
 /**
  * Main ViewModel
  */
-class MainViewModel:
+class MainViewModel(
+    private val capabilityClient: CapabilityClient
+):
     ViewModel(),
     DataClient.OnDataChangedListener,
     MessageClient.OnMessageReceivedListener,
@@ -38,8 +42,10 @@ class MainViewModel:
     var image by mutableStateOf<Bitmap?>(null)
 
     /** Connected Nodes */
-    private val _nodes = mutableStateListOf<Node>()
-    val nodes: List<Node> = _nodes
+    private val _nodes = MutableStateFlow<List<Node>>(emptyList())
+    val nodes: StateFlow<List<Node>> = _nodes
+
+    init { fetchNodes() }
 
     override fun onDataChanged(dataEvent: DataEventBuffer) {
 
@@ -73,6 +79,9 @@ class MainViewModel:
 
     override fun onCapabilityChanged(capabilityInfo: CapabilityInfo) {
 
+        // 연결된 node 초기화
+        fetchNodes()
+
         _events.add(
             Event(
                 title = "Capability Changed",
@@ -91,15 +100,11 @@ class MainViewModel:
     /**
      * 연결된 노드 데이터 저장하기
      */
-    fun fetchNodes(capabilityClient: CapabilityClient) = viewModelScope.launch {
-
-        _nodes.clear()
-        _nodes.addAll(
-            getCapabilities(capabilityClient)
-                .filterValues { CommonConstants.WEAR_CAPABILITY in it }
-                .keys
-                .toMutableStateList()
-        )
+    private fun fetchNodes() = viewModelScope.launch {
+        _nodes.value = getCapabilities(capabilityClient)
+            .filterValues { CommonConstants.WEAR_CAPABILITY in it }
+            .keys
+            .toMutableStateList()
     }
 
     /**
