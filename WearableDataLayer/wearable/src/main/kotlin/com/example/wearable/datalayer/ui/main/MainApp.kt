@@ -34,7 +34,8 @@ import com.google.android.horologist.compose.material.Chip
 @Composable
 fun MainApp(
     image: Bitmap?,
-    messages: List<Event>
+    messages: List<Event>,
+    onShowNodeList: () -> Unit
 ) {
 
     val columnState = rememberResponsiveColumnState(
@@ -46,6 +47,14 @@ fun MainApp(
 
     ScreenScaffold(scrollState = columnState) {
         ScalingLazyColumn(columnState = columnState) {
+
+            // 연결된 기기 목록
+            item {
+                Chip(
+                    label = "Query for connected devices",
+                    onClick = onShowNodeList
+                )
+            }
 
             // 수신 이미지
             item {
@@ -107,6 +116,7 @@ fun MainAppPreview() {
 
     MainApp(
         image = null,
-        messages = emptyList()
+        messages = emptyList(),
+        onShowNodeList = {}
     )
 }

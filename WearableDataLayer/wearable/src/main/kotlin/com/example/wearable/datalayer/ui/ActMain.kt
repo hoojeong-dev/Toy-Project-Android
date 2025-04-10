@@ -97,6 +97,9 @@ class ActMain : ComponentActivity() {
 
         // 전달 받은 메세지 저장
         setMessageFromIntent(intent)
+
+        // 연결된 노드 데이터 저장
+        lifecycleScope.launch { nodeViewModel.fetchNodes(capabilityClient) }
     }
 
     /**
@@ -111,7 +114,8 @@ class ActMain : ComponentActivity() {
 
             Navigation(
                 image = image,
-                messages = mainViewModel.messages
+                messages = mainViewModel.messages,
+                nodes = nodeViewModel.nodes
             )
         }
     }

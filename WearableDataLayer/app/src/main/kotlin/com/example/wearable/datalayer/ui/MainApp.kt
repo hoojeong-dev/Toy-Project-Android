@@ -35,11 +35,13 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.wearable.common.data.Event
+import com.google.android.gms.wearable.Node
 
 @Composable
 fun MainApp(
     events: List<Event>,
     image: Bitmap?,
+    nodes: List<Node>,
     apiAvailable: Boolean,
     cameraSupported: Boolean,
     onTakePhotoClick: () -> Unit,
@@ -136,6 +138,35 @@ fun MainApp(
             CommonDivider()
         }
 
+        // 연결된 node 목록
+        item {
+
+            if (nodes.isNotEmpty()) {
+
+                Column {
+                    nodes.forEach { node ->
+                        Column {
+                            Text(
+                                text = node.displayName,
+                                style = MaterialTheme.typography.titleSmall
+                            )
+                            Text(
+                                text = node.id,
+                                style = MaterialTheme.typography.bodySmall
+                            )
+                        }
+                    }
+                }
+            } else {
+
+                Text(
+                    text = "There are no connected nodes.",
+                    style = MaterialTheme.typography.titleSmall
+                )
+            }
+            CommonDivider()
+        }
+
         // 수신 events 목록
         items(events) { event ->
             Column {
@@ -168,6 +199,7 @@ fun MainAppPreview() {
             )
         ),
         image = null,
+        nodes = emptyList(),
         apiAvailable = true,
         cameraSupported = true,
         onTakePhotoClick = {},

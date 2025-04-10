@@ -8,5 +8,6 @@ class Destination {
     companion object {
 
         const val DESTINATION_MAIN = "main"
+        const val DESTINATION_CONNECTED_LIST = "connected_list"
     }
 }

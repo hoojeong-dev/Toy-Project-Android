@@ -8,12 +8,15 @@ import androidx.wear.compose.navigation.composable
 import androidx.wear.compose.navigation.rememberSwipeDismissableNavController
 import com.example.wearable.common.data.Event
 import com.example.wearable.datalayer.ui.main.MainApp
+import com.example.wearable.datalayer.ui.node.ConnectedList
+import com.google.android.gms.wearable.Node
 import com.google.android.horologist.compose.layout.AppScaffold
 
 @Composable
 fun Navigation(
     image: State<Bitmap?>,
-    messages: List<Event>
+    messages: List<Event>,
+    nodes: Set<Node>
 ) {
 
     AppScaffold {
@@ -28,7 +31,15 @@ fun Navigation(
             composable(route = Destination.DESTINATION_MAIN) {
                 MainApp(
                     image = image.value,
-                    messages = messages
+                    messages = messages,
+                    onShowNodeList = { navController.navigate(Destination.DESTINATION_CONNECTED_LIST) }
+                )
+            }
+
+            // connected list 화면
+            composable(route = Destination.DESTINATION_CONNECTED_LIST) {
+                ConnectedList(
+                    nodes = nodes
                 )
             }
         }

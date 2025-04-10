@@ -58,7 +58,6 @@ class ActMain : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
         initialize()
     }
 
@@ -77,6 +76,9 @@ class ActMain : ComponentActivity() {
      */
     private fun initialize() {
 
+        // 연결된 노드 데이터 저장
+        lifecycleScope.launch { mainViewModel.fetchNodes(capabilityClient) }
+
         setContent {
 
             WearableDataLayerTheme {
@@ -89,6 +91,7 @@ class ActMain : ComponentActivity() {
                 MainApp(
                     events = mainViewModel.events,
                     image = mainViewModel.image,
+                    nodes = mainViewModel.nodes,
                     apiAvailable = apiAvailable,
                     cameraSupported = cameraSupported,
                     onTakePhotoClick = ::takePhoto,
@@ -108,6 +111,9 @@ class ActMain : ComponentActivity() {
         dataClient.addListener(mainViewModel)
         messageClient.addListener(mainViewModel)
         capabilityClient.addListener(mainViewModel, Uri.parse("${CommonConstants.WEAR_CAPABILITY}://"), CapabilityClient.FILTER_REACHABLE)
+
+        capabilityClient.removeLocalCapability(CommonConstants.WEAR_CAPABILITY)
+        capabilityClient.addLocalCapability(CommonConstants.WEAR_CAPABILITY)
     }
 
     /**
