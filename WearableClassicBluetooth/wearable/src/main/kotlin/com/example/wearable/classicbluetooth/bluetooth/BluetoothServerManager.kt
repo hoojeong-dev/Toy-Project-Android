@@ -33,11 +33,18 @@ class BluetoothServerManager(private val context: Context) {
     private var serverJob: Job? = null
     private var isRunning = false
     private var isConnected = false
+    private var lastConnectionAttempt = 0L
 
     fun startServer() {
 
-        if (!context.hasBluetoothConnectPermission()) return
-        if (isRunning) return
+        if (!context.hasBluetoothConnectPermission()) {
+            Log.e("BluetoothServer", "No bluetooth permission")
+            return
+        }
+        if (isRunning) {
+            Log.d("BluetoothServer", "Server already running")
+            return
+        }
 
         isRunning = true
         serverJob = CoroutineScope(Dispatchers.IO).launch {
@@ -47,13 +54,19 @@ class BluetoothServerManager(private val context: Context) {
                 try {
 
                     if (!isConnected) {
-                        startServerSocket()
-                        acceptClientConnection()
+                        val currentTime = System.currentTimeMillis()
+                        if (currentTime - lastConnectionAttempt > 5000) { // 5초 간격으로 재연결 시도
+                            lastConnectionAttempt = currentTime
+                            startServerSocket()
+                            acceptClientConnection()
+                        } else {
+                            delay(1000)
+                        }
                     }
-
                 } catch (e: IOException) {
                     Log.e("BluetoothServer", "Server error: ${e.message}")
                     isConnected = false
+                    closeAllSockets()
                     delay(1000)
                 }
             }
@@ -137,13 +150,14 @@ class BluetoothServerManager(private val context: Context) {
             clientSocket?.close()
             clientSocket = null
 
+            Log.d("BluetoothServer", "Client socket closed")
         } catch (e: IOException) {
             Log.e("BluetoothServer", "Close client socket error: ${e.message}")
         }
     }
 
     fun stopServer() {
-
+        Log.d("BluetoothServer", "Stopping server...")
         isRunning = false
         isConnected = false
         serverJob?.cancel()
@@ -159,6 +173,7 @@ class BluetoothServerManager(private val context: Context) {
 
             clientSocket = null
             serverSocket = null
+            Log.d("BluetoothServer", "All sockets closed")
 
         } catch (e: IOException) {
             Log.e("BluetoothServer", "Close error: ${e.message}")
