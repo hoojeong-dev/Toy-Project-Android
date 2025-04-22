@@ -1,11 +1,11 @@
 package com.example.wearable.classicbluetooth.ui
 
 import android.content.ComponentName
-import android.content.Context
 import android.content.Intent
 import android.content.ServiceConnection
 import android.os.Bundle
 import android.os.IBinder
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.result.contract.ActivityResultContracts
@@ -95,14 +95,20 @@ class MainActivity : ComponentActivity() {
      */
     private fun startBluetoothService() {
 
-        val serviceIntent = Intent(this, BluetoothService::class.java)
-        startForegroundService(serviceIntent)
+        try {
+
+            val serviceIntent = Intent(this, BluetoothService::class.java)
+            startForegroundService(serviceIntent)
+
+        } catch (e: Exception) {
+            Log.d("BluetoothService", "startBluetoothService: $e")
+        }
     }
 
     private fun bindBluetoothService() {
 
         val intent = Intent(this, BluetoothService::class.java)
-        bindService(intent, serviceConnection, Context.BIND_AUTO_CREATE)
+        bindService(intent, serviceConnection, BIND_AUTO_CREATE)
     }
 
     private fun unbindBluetoothService() {

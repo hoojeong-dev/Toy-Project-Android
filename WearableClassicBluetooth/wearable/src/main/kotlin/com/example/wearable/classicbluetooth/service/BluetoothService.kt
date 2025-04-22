@@ -44,7 +44,12 @@ class BluetoothService : Service() {
         bluetoothManager = BluetoothServerManager(this@BluetoothService)
 
         createNotificationChannel()
-        startForeground(BluetoothConstants.NOTIFICATION_ID, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+
+        try {
+            startForeground(BluetoothConstants.NOTIFICATION_ID, createNotification(), ServiceInfo.FOREGROUND_SERVICE_TYPE_DATA_SYNC)
+        } catch (e: Exception) {
+            Log.d("BluetoothService", "onCreate: $e")
+        }
         
         startServerMonitor()
     }

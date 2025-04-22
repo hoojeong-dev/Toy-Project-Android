@@ -17,6 +17,10 @@ fun Context.hasBluetoothScanPermission(): Boolean {
     return ContextCompat.checkSelfPermission(this, Manifest.permission.BLUETOOTH_SCAN) == PackageManager.PERMISSION_GRANTED
 }
 
+
+fun Context.hasNotificationPermission(): Boolean {
+    return ContextCompat.checkSelfPermission(this, Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED
+}
 fun Activity.requestBluetoothPermissions(requestCode: Int) {
     val permissions = mutableListOf<String>()
     if (!hasBluetoothConnectPermission()) {
@@ -24,6 +28,9 @@ fun Activity.requestBluetoothPermissions(requestCode: Int) {
     }
     if (!hasBluetoothScanPermission()) {
         permissions.add(Manifest.permission.BLUETOOTH_SCAN)
+    }
+    if (!hasNotificationPermission()) {
+        permissions.add(Manifest.permission.POST_NOTIFICATIONS)
     }
     if (permissions.isNotEmpty()) {
         ActivityCompat.requestPermissions(this, permissions.toTypedArray(), requestCode)
@@ -36,7 +43,8 @@ val requiredPermissions = arrayOf(
     Manifest.permission.BLUETOOTH_CONNECT,
     Manifest.permission.ACCESS_FINE_LOCATION,
     Manifest.permission.FOREGROUND_SERVICE,
-    Manifest.permission.WAKE_LOCK
+    Manifest.permission.WAKE_LOCK,
+    Manifest.permission.POST_NOTIFICATIONS
 )
 
 fun Context.hasAllPermissions(): Boolean {
