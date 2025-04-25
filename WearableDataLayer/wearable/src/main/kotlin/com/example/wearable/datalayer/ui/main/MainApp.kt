@@ -1,6 +1,7 @@
 package com.example.wearable.datalayer.ui.main
 
 import android.R
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.asImageBitmap
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -35,7 +37,8 @@ import com.google.android.horologist.compose.material.Chip
 fun MainApp(
     image: Bitmap?,
     messages: List<Event>,
-    onShowNodeList: () -> Unit
+    onShowNodeList: () -> Unit,
+    sendMessageToAndroid: (Context, String) -> Unit
 ) {
 
     val columnState = rememberResponsiveColumnState(
@@ -44,6 +47,8 @@ fun MainApp(
             last = ItemType.Text
         )
     )
+
+    val context = LocalContext.current
 
     ScreenScaffold(scrollState = columnState) {
         ScalingLazyColumn(columnState = columnState) {
@@ -74,6 +79,20 @@ fun MainApp(
                             contentDescription = "Captured Image"
                         )
                     }
+                }
+            }
+
+            // 메시지 입력 및 전송
+            item {
+                Card(
+                    onClick = {
+                        sendMessageToAndroid.invoke(context, "Hello from Wear OS!")
+                    }
+                ) {
+                    Text(
+                        text = "Send Message to Android",
+                        style = MaterialTheme.typography.title3
+                    )
                 }
             }
 
@@ -117,6 +136,7 @@ fun MainAppPreview() {
     MainApp(
         image = null,
         messages = emptyList(),
-        onShowNodeList = {}
+        onShowNodeList = {},
+        sendMessageToAndroid = { _, _ -> }
     )
 }

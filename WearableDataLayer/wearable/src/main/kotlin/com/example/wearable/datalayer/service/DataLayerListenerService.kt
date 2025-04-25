@@ -132,7 +132,6 @@ class DataLayerListenerService: WearableListenerService() {
                     it.processName == packageName
         }
 
-
         return false
     }
 

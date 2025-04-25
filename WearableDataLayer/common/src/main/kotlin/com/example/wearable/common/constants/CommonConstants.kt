@@ -12,6 +12,7 @@ class CommonConstants {
         const val PATH_SEND_IMAGE = "/image"
         const val PATH_SEND_MESSAGE = "/message"
         const val PATH_START_WATCH_APP = "/start_watch_app"
+        const val PATH_SEND_MESSAGE_FROM_WATCH = "/message_from_watch"
 
         /**
          * Key

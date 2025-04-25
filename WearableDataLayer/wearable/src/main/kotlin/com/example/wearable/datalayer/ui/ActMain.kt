@@ -115,7 +115,8 @@ class ActMain : ComponentActivity() {
             Navigation(
                 image = image,
                 messages = mainViewModel.messages,
-                nodes = nodeViewModel.nodes
+                nodes = nodeViewModel.nodes,
+                sendMessageToAndroid = { context, message -> mainViewModel.sendMessageToAndroid(context, message) }
             )
         }
     }

@@ -1,5 +1,6 @@
 package com.example.wearable.datalayer.ui.navigation
 
+import android.content.Context
 import android.graphics.Bitmap
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
@@ -16,7 +17,8 @@ import com.google.android.horologist.compose.layout.AppScaffold
 fun Navigation(
     image: State<Bitmap?>,
     messages: List<Event>,
-    nodes: Set<Node>
+    nodes: Set<Node>,
+    sendMessageToAndroid: (Context, String) -> Unit
 ) {
 
     AppScaffold {
@@ -32,7 +34,8 @@ fun Navigation(
                 MainApp(
                     image = image.value,
                     messages = messages,
-                    onShowNodeList = { navController.navigate(Destination.DESTINATION_CONNECTED_LIST) }
+                    onShowNodeList = { navController.navigate(Destination.DESTINATION_CONNECTED_LIST) },
+                    sendMessageToAndroid = sendMessageToAndroid
                 )
             }
 
